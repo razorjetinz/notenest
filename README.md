@@ -35,12 +35,13 @@ Then visit http://localhost:8080.
 
 ## Publish with GitHub Pages
 
-A GitHub Actions workflow is included at .github/workflows/deploy.yml.
+This repository uses GitHub Pages' built-in deployment workflow.
 
 1. Open this repository's **Settings → Pages**.
-2. Under **Build and deployment**, select **GitHub Actions** as the source.
-3. Push to main, or run **Deploy NoteNest to GitHub Pages** from the Actions tab.
-4. When the workflow succeeds, open https://razorjetinz.github.io/notenest/.
+2. Under **Build and deployment**, select **Deploy from a branch**.
+3. Choose branch **main** and folder **/(root)**, then save.
+4. GitHub will build and publish the site after each push to main. You can follow progress in the **Actions** tab.
+5. Open https://razorjetinz.github.io/notenest/ once the deployment succeeds.
 
 ## Keyboard shortcuts
 
