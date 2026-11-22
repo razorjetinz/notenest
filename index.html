@@ -26,6 +26,7 @@
         <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span> Home</button>
         <button class="nav-item" data-view="all"><span class="nav-icon">▤</span> All pages <span class="nav-count" id="page-count">0</span></button>
         <button class="nav-item" data-view="favorites"><span class="nav-icon">☆</span> Favorites</button>
+        <button class="nav-item" data-view="databases"><span class="nav-icon">▦</span> Databases</button>
         <button class="nav-item" data-action="open-search"><span class="nav-icon">⌕</span> Search <kbd>⌘ K</kbd></button>
       </nav>
       <div class="sidebar-section">
@@ -60,6 +61,8 @@
     </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./app.js" defer></script>
+  <script src="./cloud.js" defer></script>
 </body>
 </html>
