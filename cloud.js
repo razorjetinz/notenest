@@ -429,7 +429,12 @@
     }
     rootHTML(actions+'<div class="database-heading"><p class="eyebrow">DATABASE</p><h1>'+esc(database.icon||"▦")+' '+esc(database.title)+'</h1><p class="section-sub">'+entries.length+' records · Updates sync when connected</p></div>'+viewTabs+body);
   }
-  function rootHTML(html){const host=document.getElementById("view");if(host)host.innerHTML=html}
+  function hideReadOnlyControls(scope){
+    if(!isReadOnly())return;
+    const host=scope||document;
+    host.querySelectorAll('[data-action="create-database"],[data-action="rename-database"],[data-action="delete-database"],[data-action="add-entry"],[data-action="delete-entry"],[data-action="delete-attachment"],[data-action="open-relations"],[data-action="restore-version"]').forEach(el=>el.hidden=true);
+  }
+  function rootHTML(html){const host=document.getElementById("view");if(host){host.innerHTML=html;hideReadOnlyControls(host)}}
   function emptyMarkupLocal(title,description,label,action){return '<div class="empty-state"><div class="empty-art">▦</div><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p>'+(label?'<button class="primary-button" data-action="'+action+'">'+esc(label)+'</button>':"")+'</div>'}
 
   function showModal(title,kicker,html) {
@@ -450,6 +455,7 @@
   }
 
   async function openRelations() {
+    if(isReadOnly()){notify("Viewer access is read-only.");return;}
     const page=App().currentPage();
     if(!page)return;
     const options=pages().filter(p=>p.id!==page.id).map(p=>'<option value="'+esc(p.id)+'">'+esc((p.icon||"📄")+" "+(p.title||"Untitled"))+'</option>').join("");
@@ -457,6 +463,7 @@
     showModal("Link another page","PAGE RELATIONS",'<p class="section-sub">Create a link from this page to another page in your workspace. The target page will show a backlink.</p><label class="cloud-label" for="relation-target">Choose a page</label><select class="cloud-input" id="relation-target">'+options+'</select><label class="cloud-label" for="relation-kind">Relationship</label><select class="cloud-input" id="relation-kind"><option value="related">Related</option><option value="source">Source</option><option value="follow-up">Follow-up</option><option value="project">Project</option></select><div class="settings-actions"><button class="primary-button" data-action="save-relation">Create link</button></div>');
   }
   function saveRelation() {
+    if(isReadOnly()){notify("Viewer access is read-only.");return;}
     const page=App().currentPage(),target=$("relation-target")?.value;
     if(!page||!target||target===page.id)return;
     ensureDatabaseArrays();
@@ -473,9 +480,11 @@
     const versions=result.data||[];
     showModal("Version history","PAGE HISTORY",versions.length?'<p class="section-sub">Snapshots are captured when the page content changes. Restoring a snapshot creates a new saved version.</p><div class="version-list">'+versions.map(v=>'<div class="version-row"><div><strong>'+esc(v.snapshot.title||"Untitled")+'</strong><small>'+esc(fullDate(v.created_at))+'</small></div><button class="secondary-button" data-action="restore-version" data-id="'+esc(v.id)+'">Restore</button></div>').join("")+'</div>':'<div class="empty-state"><h2>No earlier versions</h2><p>After you edit and save this page, earlier content snapshots will appear here.</p></div>');
     window.__NoteNestVersions=versions;
+    hideReadOnlyControls($("modal-content"));
   }
   function fullDate(v){return new Date(v).toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"})}
   async function restoreVersion(id) {
+    if(isReadOnly()){notify("Viewer access is read-only.");return;}
     const page=App().currentPage(),version=(window.__NoteNestVersions||[]).find(v=>v.id===id);
     if(!page||!version)return;
     if(!confirm("Restore this earlier version? Your current page will be saved as a version first."))return;
@@ -484,6 +493,7 @@
     closeModal();App().scheduleSave();App().render();notify("Previous version restored");
   }
   async function uploadAttachments(files) {
+    if(isReadOnly()){notify("Viewer access is read-only.");return;}
     const page=App().currentPage();
     if(!page||!files.length)return;
     if(!isConnected()){notify("Connect and sign in to upload cloud attachments.");return}
@@ -511,8 +521,10 @@
       return '<div class="attachment-row"><span>'+(a.mimeType&&a.mimeType.startsWith("image/")?"▧":"📎")+'</span><a class="attachment-name" href="'+esc(url||"#")+'" target="_blank" rel="noopener noreferrer">'+esc(a.fileName)+'</a><button class="row-icon" data-action="delete-attachment" data-id="'+esc(a.id)+'" title="Remove file">×</button></div>';
     }));
     showModal("Files & attachments","PAGE FILES",'<p class="section-sub">Private files are stored in your Supabase Storage bucket and access is checked against workspace membership.</p>'+(isReadOnly()?"":'<div class="settings-actions"><button class="primary-button" data-action="choose-attachments">＋ Upload files</button></div>')+'<div class="attachment-list">'+(links.length?links.join(""):'<p class="cloud-footnote">No files attached to this page yet.</p>')+'</div><p class="cloud-footnote">Maximum file size: 25 MB. Shareable signed links expire after one hour.</p>');
+    hideReadOnlyControls($("modal-content"));
   }
   async function deleteAttachment(id) {
+    if(isReadOnly()){notify("Viewer access is read-only.");return;}
     const item=workspace().attachments.find(a=>a.id===id);
     if(!item||!isConnected())return;
     if(!confirm("Remove "+item.fileName+" from this page?"))return;
