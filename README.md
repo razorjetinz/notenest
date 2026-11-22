@@ -1,47 +1,86 @@
 # NoteNest Workspace
 
-**A calm, open-source workspace for notes, documents, tasks and ideas.**
+**A calm, open-source workspace for notes, documents, databases, tasks and ideas.**
 
-NoteNest Workspace is a Notion-inspired, local-first web app. Organise your thoughts in pages, build structured documents with content blocks, create checklists, and keep your work portable.
+NoteNest Workspace is a Notion-inspired web app with local-first storage and optional cloud collaboration powered by Supabase. Organise information in nested pages, write with structured content blocks, manage records in multiple database views, and keep your data portable.
 
 **Live app:** https://razorjetinz.github.io/notenest/  
 **Repository:** https://github.com/razorjetinz/notenest  
+**Cloud setup:** [docs/CLOUD_SETUP.md](docs/CLOUD_SETUP.md)  
 **Made by:** [InfiOffice](https://infioffice.com)
 
 ## Features
 
-- **Pages and subpages** — organise information in a simple page hierarchy.
-- **Block editor** — paragraphs, three heading levels, bulleted and numbered lists, to-dos, quotes, code blocks, callouts and dividers.
-- **Page templates** — start with a blank page, meeting notes, project planner or journal.
-- **Workspace navigation** — home dashboard, all pages, favorites and trash.
-- **Quick search** — search page titles, tags and page text.
-- **Tags and page icons** — label pages and add a visual marker.
-- **Autosave** — changes are saved in the browser using IndexedDB, with a local-storage fallback.
-- **Portable data** — export a complete JSON backup, import a backup, or export pages as Markdown.
-- **Markdown import** — bring in existing .md, .markdown and .txt documents.
-- **Light and dark themes** — responsive layout for desktop, tablet and mobile.
-- **Installable PWA** — install it as a desktop/mobile app and use the cached app shell offline after the first successful visit.
-- **No external JavaScript dependencies** — no build step, account, analytics or tracking.
+### Pages and editor
+- Pages and nested subpages with icons, tags, favorites and trash.
+- Block editor: paragraphs, headings, bullets, numbered lists, checklists, quotes, code, callouts and dividers.
+- Inline Markdown formatting helpers for bold, italic, strikethrough, code and links.
+- Drag-and-drop block reordering.
+- Meeting notes, project planner and journal templates.
+- Quick search across page titles, tags and block content.
+- Page relations and backlinks.
+- Per-page version history with restore.
+
+### Databases
+- Create structured databases for projects, tasks, content calendars and more.
+- Table, Kanban board, calendar and gallery views.
+- Record title, status, due date, description and optional cover image URL.
+- Add, edit and delete records.
+
+### Cloud and collaboration (optional)
+- Email/password accounts managed by your own Supabase project.
+- Workspace memberships with Owner, Admin, Editor and Viewer roles.
+- Time-limited invitation links for Editors and Viewers.
+- Postgres persistence, Realtime updates and private Supabase Storage attachments.
+- Page version snapshots in Postgres.
+- Row Level Security (RLS) policies for workspaces, pages, databases, relations, versions, attachments and file objects.
+
+### Personal use and portability
+- Local autosave with IndexedDB and a local-storage fallback.
+- Import Markdown/text files and JSON workspace backups.
+- Export a whole workspace as JSON or pages as Markdown.
+- Responsive light and dark themes.
+- Installable PWA with a cached app shell for offline use after the first successful visit.
+- No analytics or tracking. No application build step.
+
+## Quick start
+
+Open https://razorjetinz.github.io/notenest/ and start using the local workspace. Pages stay in the current browser and device until you connect a cloud backend or export a backup.
+
+## Enable cloud sync
+
+Cloud sync is optional. You need your own Supabase project.
+
+1. Create a Supabase project.
+2. Run the complete SQL migration at `supabase/migrations/202611220001_notenest_cloud.sql` in the Supabase SQL Editor.
+3. Configure Supabase Auth Site URL and Redirect URLs for the NoteNest web address.
+4. In NoteNest, open **Settings & backup → Cloud workspace**.
+5. Enter the Supabase project URL and its public publishable/anon key. Create an account and sign in.
+
+Follow [the complete setup guide](docs/CLOUD_SETUP.md) for invitations, storage, security and troubleshooting.
+
+**Never use a Supabase secret or service_role key in the browser.** The migration enables RLS and installs policies that enforce workspace permissions. Keep RLS enabled.
 
 ## Run locally
 
-You can open index.html directly for basic use. For service-worker and installable PWA support, run a local web server:
+For local features, open `index.html` in a modern browser. For PWA/service-worker support and Supabase redirects, serve the files over HTTP:
 
 ~~~bash
 python3 -m http.server 8080
 ~~~
 
-Then visit http://localhost:8080.
+Then visit http://localhost:8080. Add that exact origin to Supabase Auth Redirect URLs when testing cloud sign-in locally.
 
-## Publish with GitHub Pages
+## GitHub Pages
 
-This repository uses GitHub Pages' built-in deployment workflow.
+The live web interface is hosted on GitHub Pages:
 
-1. Open this repository's **Settings → Pages**.
-2. Under **Build and deployment**, select **Deploy from a branch**.
-3. Choose branch **main** and folder **/(root)**, then save.
-4. GitHub will build and publish the site after each push to main. You can follow progress in the **Actions** tab.
-5. Open https://razorjetinz.github.io/notenest/ once the deployment succeeds.
+1. Open repository **Settings → Pages**.
+2. Select **Deploy from a branch**.
+3. Choose branch `main` and folder `/(root)`.
+4. GitHub Pages publishes changes pushed to `main`.
+
+GitHub Pages hosts static files only. Supabase provides the database, authentication, realtime service and file storage.
 
 ## Keyboard shortcuts
 
@@ -50,29 +89,41 @@ This repository uses GitHub Pages' built-in deployment workflow.
 | Ctrl / ⌘ + N | Create a page |
 | Ctrl / ⌘ + K | Search the workspace |
 | Ctrl / ⌘ + S | Save now |
+| Enter at the end of a block | Create the next block |
+| Shift + Enter | Add a line inside the current block |
 
-Press Enter at the end of a block to create the next block. Use Shift + Enter for a new line inside the current block.
+## Data, privacy and sync behaviour
 
-## Privacy and storage
+- Without Supabase configured, page and database data is stored in this browser profile on this device.
+- With Supabase configured and signed in, NoteNest syncs workspace pages and database records to your own Supabase project.
+- Attachments are stored in a private Supabase Storage bucket. Signed download links expire.
+- The cloud app sends data to the Supabase URL you configure. It does not send page content to InfiOffice or GitHub.
+- Export a JSON backup regularly. Clearing browser site data can delete local-only data.
+- When first connecting to a new, empty cloud workspace, NoteNest uploads the current browser workspace. If cloud pages already exist, the cloud workspace is loaded into the browser. Export a backup before connecting devices with important unsynced local work.
 
-NoteNest is local-first. Page content is stored in the current browser profile on the current device. It is **not** sent to a server, and there is no account or telemetry. Your pages will not automatically sync between browsers or devices.
+## Current limitations
 
-Use **Settings & backup → Export JSON** regularly. To move your workspace to another device, export the JSON backup on the first device and import it on the second. Clearing browser site data can delete your local workspace.
+This is an actively evolving open-source project, not yet a feature-for-feature Notion replacement.
 
-## Current scope
+- Realtime updates refresh pages and database records; simultaneous character-level editing, cursors and conflict-aware merging are not included. The last saved version can win when two people edit the same page at once.
+- Database views currently use an initial fixed field set. Custom field types, filters, formulas, rollups, relations and advanced sorting are not yet implemented.
+- Calendar view currently displays the current month.
+- File previews depend on the browser. Unsupported file types can still be downloaded.
+- Version snapshots are throttled to at most one snapshot per page per minute during repeated edits.
+- Workspace selection, member removal and detailed role administration are planned enhancements.
 
-This release is a personal workspace foundation, not a hosted multi-user Notion clone. It does not yet provide accounts, cloud synchronisation, real-time collaboration, permissions, public sharing, relational databases, or hosted file storage. Those capabilities require a server-side service and are planned as future milestones.
+## Security notes
+
+The client uses only the Supabase publishable/anon key. Never put database passwords, service-role keys, secret keys or SMTP credentials in this repository or browser configuration. The migration uses Postgres RLS and Storage policies; do not disable them. Review the policies before making schema changes or using the app for sensitive production data.
 
 ## Roadmap
 
-- [ ] Cloud sync with a self-hostable backend
-- [ ] User accounts, workspaces and access controls
-- [ ] Real-time collaboration and sharing
-- [ ] Database views (table, board, calendar and gallery)
-- [ ] File and image attachments
-- [ ] Backlinks, mentions and page relations
-- [ ] Version history and restore points
-- [ ] More importers and exporters
+- [ ] Conflict-aware collaborative editing and presence
+- [ ] Custom database fields, filters, sorting, formulas and rollups
+- [ ] Calendar navigation and richer database relations
+- [ ] Workspace switching and member administration
+- [ ] More importers, export formats and migration tools
+- [ ] Automated unit, integration and RLS test coverage
 
 ## Contributing
 
@@ -80,7 +131,7 @@ Bug reports, feature requests and pull requests are welcome. For substantial cha
 
 ## License
 
-MIT. See LICENSE.
+MIT. See [LICENSE](LICENSE).
 
 ---
 
