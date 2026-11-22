@@ -92,3 +92,13 @@
 .gallery-card img{width:calc(100% + 30px);height:100px;object-fit:cover;margin:-15px -15px 2px}
 .gallery-placeholder{height:100px;background:var(--surface-2);display:grid;place-items:center;font-size:30px;color:var(--muted);margin:-15px -15px 2px}
 @media(max-width:760px){.extras-grid{grid-template-columns:1fr}.page-toolbar{align-items:flex-start}.page-toolbar-right{justify-content:flex-end}.database-table-wrap{margin-left:-3px;margin-right:-3px}.calendar-cell{min-height:58px;padding:3px}.calendar-weekday{font-size:8px;padding:5px 1px}.calendar-entry{font-size:7px;padding:2px}.kanban-board{grid-template-columns:repeat(3,210px)}}
+
+
+.inline-format-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:-10px 0 13px 30px}
+.inline-format-toolbar button{min-width:28px;height:26px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--muted);font-size:10px;padding:3px 7px}
+.inline-format-toolbar button:hover{color:var(--accent);border-color:var(--accent-2)}
+.inline-format-toolbar .section-sub{margin-right:3px}
+.block-row[draggable="true"]{cursor:default}
+.block-row.dragging{opacity:.4}
+.block-row[draggable="true"] .block-grip{cursor:grab}
+.block-row[draggable="true"] .block-grip:active{cursor:grabbing}
