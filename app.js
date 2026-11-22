@@ -156,5 +156,5 @@
     newBlock: newBlock,
     createPage: createPage
   };
-  start();
+  window.NoteNestApp.ready = start();
 })();
