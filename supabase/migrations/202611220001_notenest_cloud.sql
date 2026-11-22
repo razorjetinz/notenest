@@ -138,11 +138,11 @@ create index if not exists pages_parent_idx on public.pages(parent_id);
 
 create or replace function private.can_edit_page(p_workspace_id uuid,p_page_id uuid)
 returns boolean language sql stable security definer set search_path = ''
-as $ select coalesce(
+as $$ select coalesce(
   private.can_edit_workspace(p_workspace_id)
   and exists(select 1 from public.pages p where p.workspace_id=p_workspace_id and p.id=p_page_id),
   false
-); $;
+); $$;
 
 create table if not exists public.page_versions (
   id uuid primary key default gen_random_uuid(),
@@ -310,17 +310,17 @@ create policy "editors can remove attachments" on public.attachments for delete 
 -- by private-schema implementations with explicit auth.uid() checks.
 create or replace function public.create_workspace(p_name text default 'My workspace')
 returns uuid language sql security invoker set search_path = ''
-as $ select private.create_workspace(p_name); $;
+as $$ select private.create_workspace(p_name); $$;
 
 create or replace function public.create_workspace_invite(
   p_workspace_id uuid, p_role text default 'editor', p_expires_hours integer default 168, p_uses integer default 5
 )
 returns text language sql security invoker set search_path = ''
-as $ select private.create_workspace_invite(p_workspace_id,p_role,p_expires_hours,p_uses); $;
+as $$ select private.create_workspace_invite(p_workspace_id,p_role,p_expires_hours,p_uses); $$;
 
 create or replace function public.join_workspace_with_invite(p_code text)
 returns uuid language sql security invoker set search_path = ''
-as $ select private.join_workspace_with_invite(p_code); $;
+as $$ select private.join_workspace_with_invite(p_code); $$;
 
 revoke all on public.workspace_invites from anon, authenticated;
 grant select, update on public.workspaces to authenticated;
