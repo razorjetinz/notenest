@@ -158,7 +158,7 @@
     if (!email || password.length < 8) { notify("Enter your email and a password with at least 8 characters."); return; }
     setStatus(mode === "signup" ? "Creating account…" : "Signing in…", "busy");
     let result;
-    if (mode === "signup") result = await client.auth.signUp({ email, password });
+    if (mode === "signup") result = await client.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
     else result = await client.auth.signInWithPassword({ email, password });
     if (result.error) {
       setStatus("Sign-in failed", "offline");
@@ -179,6 +179,7 @@
   async function loadCloudWorkspace() {
     if (!client || !user || loadingRemote) return;
     loadingRemote = true;
+    let initialSyncOk = true;
     try {
       const membership = await client.from("workspace_members").select("workspace_id,role").eq("user_id", user.id);
       if (membership.error) throw membership.error;
@@ -212,7 +213,7 @@
         local.databases = local.databases || [];
         local.relations = local.relations || [];
         local.attachments = local.attachments || [];
-        await syncWorkspace(true);
+        initialSyncOk = await syncWorkspace(true);
       } else {
         const mappedPages = pageRows.map((p) => ({
           id: p.id, parentId: p.parent_id, title: p.title, icon: p.icon, blocks: p.blocks || [],
@@ -244,7 +245,7 @@
       }
       user = (await client.auth.getUser()).data.user || user;
       subscribeRealtime();
-      setStatus("Synced · " + workspaceName, "online");
+      setStatus(initialSyncOk ? "Synced · " + workspaceName : "Sync needs attention", initialSyncOk ? "online" : "offline");
       const pendingInvite = new URLSearchParams(location.search).get("invite") || localStorage.getItem("notenest.pending.invite");
       if (pendingInvite) {
         localStorage.removeItem("notenest.pending.invite");
@@ -266,7 +267,7 @@
     return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
   }
   async function syncWorkspace(force) {
-    if (!isConnected() || syncing || (loadingRemote && !force)) return;
+    if (!isConnected() || syncing || (loadingRemote && !force)) return false;
     syncing = true;
     setStatus("Syncing…", "busy");
     try {
@@ -300,10 +301,12 @@
       if (relationRows.length) { const r=await client.from("page_relations").upsert(relationRows,{onConflict:"source_page_id,target_page_id"}); if(r.error)throw r.error; }
       const label=$("save-label"); if(label)label.textContent="Cloud synced";
       setStatus("Synced · " + new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}), "online");
+      return true;
     } catch (error) {
       setStatus("Offline / sync error", "offline");
       console.error("NoteNest cloud sync failed",error);
       notify("Cloud sync failed: " + errorMessage(error));
+      return false;
     } finally { syncing=false; }
   }
   function queueSync() {
@@ -311,7 +314,8 @@
     clearTimeout(syncTimer);
     syncTimer=setTimeout(syncWorkspace,900);
   }
-  async function syncNow() { clearTimeout(syncTimer); await syncWorkspace(); }
+  async function syncNow() { clearTimeout(syncTimer); return await syncWorkspace(); }
+  window.addEventListener("online", () => { if (isConnected()) syncNow(); });
 
   function subscribeRealtime() {
     if (!client || !workspaceId) return;
@@ -323,6 +327,12 @@
       .on("postgres_changes",{event:"*",schema:"public",table:"page_relations",filter:"workspace_id=eq."+workspaceId},handleRemoteRelation)
       .on("postgres_changes",{event:"*",schema:"public",table:"attachments",filter:"workspace_id=eq."+workspaceId},handleRemoteAttachment)
       .subscribe((status)=>{ if(status==="SUBSCRIBED")setStatus("Live · "+workspaceName,"online"); });
+  }
+  async function persistRemoteChanges() {
+    const previous=loadingRemote;
+    loadingRemote=true;
+    try { await App().persistNow(); }
+    finally { loadingRemote=previous; }
   }
   function handleRemotePage(payload) {
     if (loadingRemote || syncing) return;
@@ -339,18 +349,18 @@
       else return;
     }
     const editing = $("page-title") && document.activeElement && (document.activeElement.id==="page-title" || document.activeElement.dataset.blockText);
-    if(editing){notify("A collaborator updated a page. Finish editing before refreshing it.");return}
-    App().persistNow(); App().render();
+    if(editing){notify("A collaborator updated a page. Finish editing before refreshing it.");persistRemoteChanges();return}
+    persistRemoteChanges(); App().render();
   }
   function handleRemoteEntry(payload) {
     if (loadingRemote || syncing) return;
     const row=payload.new||payload.old;
     if(!row)return;
-    const db=byDatabase(row.database_id);
+    const db=row.database_id ? byDatabase(row.database_id) : (workspace().databases||[]).find(d=>(d.entries||[]).some(e=>e.id===row.id));
     if(!db)return;
     if(payload.eventType==="DELETE"){
       db.entries=(db.entries||[]).filter(e=>e.id!==row.id);
-      App().persistNow();
+      persistRemoteChanges();
       if(document.querySelector(".database-heading"))App().render();
       return;
     }
@@ -359,7 +369,7 @@
     if(index<0)db.entries.push(mapped);
     else if(mapped.updatedAt>(db.entries[index].updatedAt||0)+1000)db.entries[index]=mapped;
     else return;
-    App().persistNow();
+    persistRemoteChanges();
     if(document.querySelector(".database-heading"))App().render();
   }
   function handleRemoteDatabase(payload) {
@@ -369,11 +379,11 @@
     if(payload.eventType==="DELETE"){
       data.databases=(data.databases||[]).filter(d=>d.id!==row.id);
       if(activeDatabaseId===row.id)activeDatabaseId=null;
-      App().persistNow();if(document.querySelector(".database-heading"))App().setView("databases");return;
+      persistRemoteChanges();if(document.querySelector(".database-heading"))App().setView("databases");return;
     }
     const mapped={id:row.id,title:row.title,icon:row.icon,fields:row.fields||[],view:row.view_type||"table",entries:index>=0?data.databases[index].entries||[]:[],createdAt:new Date(row.created_at).getTime(),updatedAt:new Date(row.updated_at).getTime()};
     if(index<0)data.databases.push(mapped);else data.databases[index]=Object.assign(mapped,{entries:data.databases[index].entries||[]});
-    App().persistNow();
+    persistRemoteChanges();
     if(document.querySelector(".database-heading"))App().render();
   }
 
