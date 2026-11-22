@@ -654,8 +654,9 @@
   let draggedBlockId=null;
   const editorRoot=document.getElementById("view");
   editorRoot.addEventListener("dragstart",function(event){
-    const row=event.target.closest("[data-block-row]");
-    if(!row)return;
+    const handle=event.target.closest(".block-grip");
+    const row=handle&&handle.closest("[data-block-row]");
+    if(!row){event.preventDefault();return;}
     draggedBlockId=row.dataset.blockRow;
     if(event.dataTransfer){event.dataTransfer.effectAllowed="move";event.dataTransfer.setData("text/plain",draggedBlockId);}
     row.classList.add("dragging");
