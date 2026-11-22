@@ -16,7 +16,14 @@
   const pages = () => App().activePages();
   const byPage = (id) => workspace().pages.find((p) => p.id === id) || null;
   const byDatabase = (id) => (workspace().databases || []).find((d) => d.id === id) || null;
-  const config = () => { try { return JSON.parse(localStorage.getItem(CONFIG_KEY) || "null"); } catch (_) { return null; } };
+  const config = () => {
+    if (localStorage.getItem("notenest.cloud.disabled") === "1") return null;
+    try {
+      const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "null");
+      if (saved && saved.url && saved.key) return saved;
+    } catch (_) {}
+    return window.NOTENEST_SUPABASE_CONFIG || null;
+  };
   const isConnected = () => !!(client && user && workspaceId);
 
   function errorMessage(error) {
@@ -107,6 +114,7 @@
       notify("Use the publishable or anon key, not a secret key."); return;
     }
     localStorage.setItem(CONFIG_KEY, JSON.stringify({ url, key }));
+    localStorage.removeItem("notenest.cloud.disabled");
     initializeClient(true);
   }
 
@@ -615,7 +623,7 @@
     if(!action)return;
     switch(action.dataset.action){
       case "cloud-connect": saveConfig(); break;
-      case "cloud-disconnect": localStorage.removeItem(CONFIG_KEY);if(client&&channel)client.removeChannel(channel);client=null;user=null;workspaceId=null;renderCloudPanel();notify("Cloud configuration removed from this browser");break;
+      case "cloud-disconnect": localStorage.removeItem(CONFIG_KEY);localStorage.setItem("notenest.cloud.disabled","1");if(client&&channel)client.removeChannel(channel);client=null;user=null;workspaceId=null;renderCloudPanel();notify("Cloud connection paused on this browser");break;
       case "cloud-signin": await authenticate("signin");break;
       case "cloud-signup": await authenticate("signup");break;
       case "cloud-signout": if(client){await client.auth.signOut();user=null;workspaceId=null;renderCloudPanel();}break;

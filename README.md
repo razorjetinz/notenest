@@ -52,10 +52,9 @@ Open https://razorjetinz.github.io/notenest/ and start using the local workspace
 Cloud sync is optional. You need your own Supabase project.
 
 1. Create a Supabase project.
-2. Run the complete SQL migration at `supabase/migrations/202611220001_notenest_cloud.sql` in the Supabase SQL Editor.
+2. Run both SQL migration files in order: `supabase/migrations/202611220001_notenest_cloud.sql`, then `supabase/migrations/202611220002_notenest_security_performance.sql`.
 3. Configure Supabase Auth Site URL and Redirect URLs for the NoteNest web address.
-4. In NoteNest, open **Settings & backup → Cloud workspace**.
-5. Enter the Supabase project URL and its public publishable/anon key. Create an account and sign in.
+4. The published NoteNest site already contains the browser-safe URL and publishable key for its configured Supabase project. Open **Settings & backup → Cloud workspace**, create an account and sign in. For a fork or your own Supabase project, replace `cloud-config.js` with that project’s URL and publishable key.
 
 Follow [the complete setup guide](docs/CLOUD_SETUP.md) for invitations, storage, security and troubleshooting.
 
@@ -114,7 +113,7 @@ This is an actively evolving open-source project, not yet a feature-for-feature 
 
 ## Security notes
 
-The client uses only the Supabase publishable/anon key. Never put database passwords, service-role keys, secret keys or SMTP credentials in this repository or browser configuration. The migration uses Postgres RLS and Storage policies; do not disable them. Review the policies before making schema changes or using the app for sensitive production data.
+The client uses only a Supabase publishable key. Publishable keys are intentionally visible in browser source; they do not grant privileged database access when RLS is correctly configured. Never put database passwords, service-role keys, secret keys or SMTP credentials in this repository or browser configuration. The migration uses Postgres RLS and Storage policies; do not disable them. Review the policies before making schema changes or using the app for sensitive production data.
 
 ## Roadmap
 

@@ -15,15 +15,15 @@ Supabase free-plan quotas and limits can change. Check the current Supabase pric
 
 1. Open the Supabase project.
 2. Choose **SQL Editor → New query**.
-3. Open the repository file `supabase/migrations/202611220001_notenest_cloud.sql`.
-4. Copy the entire file into the SQL Editor and run it.
-5. Confirm that the query completes without errors.
+3. Run `supabase/migrations/202611220001_notenest_cloud.sql` from the repository.
+4. In a second query, run `supabase/migrations/202611220002_notenest_security_performance.sql`.
+5. Confirm that both queries complete without errors. The second migration tightens function settings, denies direct invitation-table access and adds foreign-key indexes.
 
 The migration creates the NoteNest tables, workspace roles, invitation functions, page-version trigger, a private Storage bucket and Row Level Security (RLS) policies. Do not remove or disable RLS.
 
 ## 3. Configure authentication URLs
 
-In Supabase, open **Authentication → URL Configuration**.
+In Supabase, open **Authentication → URL Configuration**. This setting must be completed in the Dashboard; the Supabase management connection available to this session does not expose the Auth URL configuration endpoint.
 
 Set the Site URL to:
 
@@ -111,3 +111,8 @@ The application lists member IDs and roles. It does not expose other users' emai
 **Files fail to upload:** confirm the migration created the private `notenest-files` bucket and check that the file is below 25 MB and uses an allowed MIME type.
 
 **Move your data:** use Settings & backup → Export JSON on the source device and Import backup on the destination device. Keep the exported file secure because it contains your workspace content.
+
+
+## Additional password protection
+
+The Supabase Security Advisor reports that leaked-password protection is currently disabled. In the Supabase Dashboard, open **Authentication → Settings → Password security** and enable leaked password protection. The management connection used for database deployment does not expose this Auth security toggle, so it has not been changed automatically.
