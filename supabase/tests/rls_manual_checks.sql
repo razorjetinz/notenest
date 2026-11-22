@@ -1,0 +1,19 @@
+-- Manual NoteNest RLS test checklist
+-- Run this after the migration with two separate test accounts.
+-- Do not run with service_role; that role bypasses RLS and is not a valid policy test.
+--
+-- 1. Sign in as Account A in NoteNest. Create a workspace and a page.
+-- 2. Create a Viewer invitation and accept it while signed in as Account B.
+-- 3. As Account B, confirm the workspace and pages are visible.
+-- 4. As Account B, attempt direct page updates in the Supabase client:
+--      update public.pages set title='should fail' where id='<PAGE_UUID>';
+--    The viewer update must be denied (or affect zero rows).
+-- 5. Create an Editor invitation from Account A and accept it with Account C.
+-- 6. As Account C, create and update a page and a database record; both should succeed.
+-- 7. As Account C, call create_workspace_invite for the shared workspace; it must fail.
+-- 8. As an unauthenticated client, query public.pages; no private rows must be returned.
+-- 9. As a user not invited to the workspace, query its pages and storage object paths;
+--    no rows or file contents should be accessible.
+--
+-- SQL RLS policies are the access-control boundary. Client-side hiding/disabled controls
+-- are only usability features and must never replace the policies.
