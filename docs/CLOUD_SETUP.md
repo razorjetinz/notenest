@@ -17,7 +17,8 @@ Supabase free-plan quotas and limits can change. Check the current Supabase pric
 2. Choose **SQL Editor → New query**.
 3. Run `supabase/migrations/202611220001_notenest_cloud.sql` from the repository.
 4. In a second query, run `supabase/migrations/202611220002_notenest_security_performance.sql`.
-5. Confirm that both queries complete without errors. The second migration tightens function settings, denies direct invitation-table access and adds foreign-key indexes.
+5. In a third query, run `supabase/migrations/202611220003_notenest_relationship_integrity.sql`.
+6. Confirm that all three queries complete without errors. The later migrations tighten function settings, add supporting indexes and enforce same-workspace references for pages, versions, relations, database entries and attachments.
 
 The migration creates the NoteNest tables, workspace roles, invitation functions, page-version trigger, a private Storage bucket and Row Level Security (RLS) policies. Do not remove or disable RLS.
 

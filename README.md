@@ -52,7 +52,7 @@ Open https://razorjetinz.github.io/notenest/ and start using the local workspace
 Cloud sync is optional. You need your own Supabase project.
 
 1. Create a Supabase project.
-2. Run both SQL migration files in order: `supabase/migrations/202611220001_notenest_cloud.sql`, then `supabase/migrations/202611220002_notenest_security_performance.sql`.
+2. Run the three SQL migration files in order: `202611220001_notenest_cloud.sql`, `202611220002_notenest_security_performance.sql`, then `202611220003_notenest_relationship_integrity.sql` (all under `supabase/migrations/`).
 3. Configure Supabase Auth Site URL and Redirect URLs for the NoteNest web address.
 4. The published NoteNest site already contains the browser-safe URL and publishable key for its configured Supabase project. Open **Settings & backup → Cloud workspace**, create an account and sign in. For a fork or your own Supabase project, replace `cloud-config.js` with that project’s URL and publishable key.
 
