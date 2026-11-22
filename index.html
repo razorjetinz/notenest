@@ -1,108 +1,65 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="NoteNest is a simple personal notes manager that saves notes locally in your browser.">
-<meta name="theme-color" content="#f4f6fb">
-<title>NoteNest — Your ideas, neatly kept</title>
-<style>
-:root{color-scheme:light;--bg:#f4f6fb;--panel:#fff;--soft:#f8f9fd;--text:#20263a;--muted:#778096;--border:#e6e9f1;--accent:#6758d8;--accent-soft:#efedff;--danger:#c64b5b;--shadow:0 12px 32px #262c4d12}
-[data-theme=dark]{color-scheme:dark;--bg:#131725;--panel:#1c2233;--soft:#20283a;--text:#eef0fa;--muted:#a2abc0;--border:#30394e;--accent:#a59aff;--accent-soft:#302b50;--danger:#ff8492;--shadow:0 12px 32px #0004}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #6758d855;outline-offset:2px}
-.app{min-height:100vh;max-width:1600px;margin:auto;background:var(--panel);display:grid;grid-template-columns:220px 310px minmax(0,1fr);box-shadow:var(--shadow)}
-.sidebar{padding:25px 15px;background:var(--soft);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:18px}
-.brand{display:flex;align-items:center;gap:10px;padding:0 8px 10px}.logo{width:38px;height:38px;border-radius:13px;background:var(--accent);color:white;display:grid;place-items:center;font-size:20px}.brand strong{font-size:18px;letter-spacing:-.04em}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.section{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.12em;padding:0 10px 5px;text-transform:uppercase}
-.nav,.categories{display:grid;gap:4px}.nav button,.categories button{border:0;background:transparent;color:var(--muted);text-align:left;border-radius:9px;padding:9px 10px;font-size:12px}.nav button:hover,.categories button:hover,.nav button.active,.categories button.active{background:var(--accent-soft);color:var(--accent)}
-.nav button span{float:right;color:var(--muted);font-size:11px}
-.privacy{margin-top:auto;color:var(--muted);font-size:11px;padding:12px 8px}.privacy b{color:#24845d;display:block;margin-bottom:5px}
-.list-panel{border-right:1px solid var(--border);min-height:100vh;display:flex;flex-direction:column;min-width:0}
-.list-head{padding:24px 18px 14px}.head-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px}.head-row h2{font-size:19px;margin:0;letter-spacing:-.04em}.sub{font-size:11px;color:var(--muted)}
-button,.button{border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text);padding:8px 11px;font-size:12px;font-weight:650}
-.primary{background:var(--accent);border-color:var(--accent);color:white}.primary:hover{filter:brightness(.95)}
-.search{width:100%;height:36px;border:1px solid var(--border);border-radius:9px;background:var(--soft);color:var(--text);padding:0 11px;font-size:12px}
-.note-list{padding:0 10px 14px;overflow-y:auto;max-height:calc(100vh - 145px)}.note-card{width:100%;display:block;text-align:left;background:transparent;border:1px solid transparent;margin:3px 0;padding:12px;border-radius:11px}
-.note-card:hover{background:var(--soft)}.note-card.active{background:var(--accent-soft);border-color:var(--accent)}
-.note-title{font-weight:750;font-size:13px}.note-preview{font-size:11px;color:var(--muted);margin-top:5px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.note-meta{font-size:10px;color:var(--muted);margin-top:8px}
-.empty{padding:30px 12px;color:var(--muted);text-align:center;font-size:12px}
-.editor{min-width:0;min-height:100vh;display:flex;flex-direction:column}.editor-top{height:65px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 24px}
-.save-state{font-size:11px;color:var(--muted)}.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.editor-content{padding:34px clamp(20px,5vw,65px);max-width:950px;width:100%;margin:auto;flex:1;display:flex;flex-direction:column}
-.kicker{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:11px;margin-bottom:17px}
-.field{border:0;outline:0;background:transparent;color:var(--text);width:100%}
-.title{font-size:clamp(25px,3vw,35px);font-weight:780;letter-spacing:-.045em;margin-bottom:17px}
-.tags{border-bottom:1px solid var(--border);padding:0 0 17px;margin-bottom:20px;font-size:11px}
-.body{min-height:300px;resize:vertical;font-size:14px;line-height:1.9;flex:1}
-.footer{border-top:1px solid var(--border);padding-top:15px;margin-top:18px;color:var(--muted);font-size:10px;display:flex;justify-content:space-between;gap:10px}
-.blank{margin:auto;text-align:center;max-width:420px;padding:40px 20px}.blank-icon{width:75px;height:75px;border-radius:25px;background:var(--accent-soft);color:var(--accent);font-size:32px;display:grid;place-items:center;margin:0 auto 18px}.blank h2{margin:0 0 8px}.blank p{color:var(--muted);line-height:1.7;margin:0 0 18px}
-.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:var(--text);color:var(--panel);padding:10px 15px;border-radius:9px;font-size:12px;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
-[hidden]{display:none!important}
-@media(max-width:900px){.app{grid-template-columns:190px 260px minmax(0,1fr)}.editor-content{padding:28px 24px}.editor-top{padding:0 14px}}
-@media(max-width:680px){.app{grid-template-columns:1fr}.sidebar{min-height:0;padding:12px;border-right:0;border-bottom:1px solid var(--border)}.brand{padding:0 4px}.brand small,.section,.categories,.privacy{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.list-panel{min-height:0;border-right:0}.list-head{padding:14px}.note-list{max-height:33vh}.editor{min-height:62vh;border-top:1px solid var(--border)}.editor-top{height:auto;min-height:55px;padding:9px 12px}.editor-content{padding:23px 17px}.body{min-height:210px}.actions{gap:4px}.actions button{padding:7px 8px;font-size:11px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NoteNest Workspace is a calm, local-first space for notes, docs, tasks and ideas.">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="color-scheme" content="light dark">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <title>NoteNest Workspace</title>
 </head>
 <body>
-<div class="app">
-<aside class="sidebar">
-  <div class="brand"><div class="logo">✎</div><div><strong>NoteNest</strong><small>A quiet place for ideas</small></div></div>
-  <div><div class="section">Workspace</div><nav class="nav"><button class="active" data-view="all">▤ All notes <span id="all-count">0</span></button><button data-view="pinned">◇ Pinned <span id="pin-count">0</span></button></nav></div>
-  <div><div class="section">Categories</div><div class="categories" id="categories"></div></div>
-  <div class="privacy"><b>● Saved on this device</b>Your notes stay in this browser. No account or cloud service required.</div>
-</aside>
-<section class="list-panel">
-  <header class="list-head"><div class="head-row"><div><h2 id="list-heading">All notes</h2><div class="sub" id="list-sub">Your thoughts in one place</div></div><button class="primary" id="new-note">＋ New note</button></div><input class="search" id="search" type="search" placeholder="Search notes..." aria-label="Search notes"></header>
-  <div class="note-list" id="note-list" aria-live="polite"></div>
-</section>
-<main class="editor">
-  <div class="editor-top"><div class="save-state" id="save-state">● All changes saved</div><div class="actions" id="actions" hidden><button id="pin">◇ Pin</button><button id="export">↓ Export</button><button id="delete">⌫ Delete</button><button id="export-all">⇩ Export all</button><button id="theme">☾ Theme</button></div><button id="theme-empty">☾ Theme</button></div>
-  <div class="editor-content" id="editor-content"><div class="blank"><div class="blank-icon">✎</div><h2>Your ideas belong here.</h2><p>Create a note, save a thought, or keep track of something important. NoteNest saves your work automatically as you type.</p><button class="primary" id="first-note">＋ Create your first note</button></div></div>
-</main>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>
-(function(){
-"use strict";
-var KEY="notenest.notes.v1",THEME="notenest.theme.v1",notes=readNotes(),selected=null,view="all",category=null,saveTimer=null,toastTimer=null;
-function el(id){return document.getElementById(id)}
-function readNotes(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v.filter(function(n){return n&&typeof n.id==="string"}):[]}catch(e){return []}}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(notes));el("save-state").textContent="● All changes saved"}catch(e){el("save-state").textContent="Could not save — storage may be full"};counts();renderList();renderCategories()}
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function current(){return notes.find(function(n){return n.id===selected})||null}
-function toast(s){el("toast").textContent=s;el("toast").classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(function(){el("toast").classList.remove("show")},2100)}
-function counts(){el("all-count").textContent=notes.length;el("pin-count").textContent=notes.filter(function(n){return n.pinned}).length}
-function visible(){var q=el("search").value.trim().toLowerCase();return notes.filter(function(n){return (view!=="pinned"||n.pinned)&&(!category||n.category===category)&&(!q||[n.title,n.body,n.category].concat(n.tags||[]).join(" ").toLowerCase().includes(q))}).sort(function(a,b){return Number(b.pinned)-Number(a.pinned)||b.updatedAt-a.updatedAt})}
-function renderList(){var host=el("note-list"),list=visible();if(!list.length){host.innerHTML='<div class="empty">'+(notes.length?'No notes match this view.':'No notes yet. Create one to get started.')+'</div>';return}host.innerHTML=list.map(function(n){return '<button class="note-card '+(n.id===selected?'active':'')+'" data-id="'+escapeHTML(n.id)+'"><div class="note-title">'+escapeHTML(n.title.trim()||"Untitled note")+(n.pinned?'　◆':'')+'</div><div class="note-preview">'+escapeHTML(n.body.replace(/\s+/g," ").trim()||"No additional text")+'</div><div class="note-meta">'+escapeHTML(n.category||"Personal")+' · '+new Date(n.updatedAt).toLocaleDateString()+'</div></button>'}).join("");host.querySelectorAll("[data-id]").forEach(function(b){b.addEventListener("click",function(){selectNote(b.dataset.id)})})}
-function renderCategories(){var cats=[...new Set(notes.map(function(n){return n.category||"Personal"}))].sort();el("categories").innerHTML=cats.map(function(c){return '<button class="'+(category===c?'active':'')+'" data-category="'+escapeHTML(c)+'">• '+escapeHTML(c)+'</button>'}).join("");el("categories").querySelectorAll("[data-category]").forEach(function(b){b.addEventListener("click",function(){category=category===b.dataset.category?null:b.dataset.category;view="all";updateView();renderList();renderCategories()})})}
-function updateView(){document.querySelectorAll("[data-view]").forEach(function(b){b.classList.toggle("active",b.dataset.view===view&&!category)});el("list-heading").textContent=category|| (view==="pinned"?"Pinned notes":"All notes");el("list-sub").textContent=category?"Notes in this category":view==="pinned"?"Your important notes":"Your thoughts in one place"}
-function editor(){var n=current(),host=el("editor-content");el("actions").hidden=!n;el("theme-empty").hidden=!!n;if(!n){host.innerHTML='<div class="blank"><div class="blank-icon">✎</div><h2>Your ideas belong here.</h2><p>Create a note, save a thought, or keep track of something important. NoteNest saves your work automatically as you type.</p><button class="primary" id="first-note">＋ Create your first note</button></div>';el("first-note").addEventListener("click",create);return}
-el("pin").textContent=n.pinned?"◆ Unpin":"◇ Pin";
-var opts=[...new Set([n.category||"Personal","Personal","Work","Ideas","Learning","Other"])].sort();
-host.innerHTML='<div class="kicker">Category <input id="note-category" value="'+escapeHTML(n.category||"Personal")+'" list="category-options" aria-label="Category" style="width:125px;background:var(--soft);border:1px solid var(--border);border-radius:7px;padding:5px;color:var(--text)"><datalist id="category-options">'+opts.map(function(c){return '<option value="'+escapeHTML(c)+'">' }).join("")+'</datalist><span>· Edited '+new Date(n.updatedAt).toLocaleString()+'</span></div><input class="field title" id="note-title" maxlength="120" placeholder="Untitled note" aria-label="Note title" value="'+escapeHTML(n.title)+'"><div class="tags"><label for="note-tags">TAGS　</label><input class="field" id="note-tags" placeholder="Comma-separated tags" value="'+escapeHTML((n.tags||[]).join(", "))+'"></div><textarea class="field body" id="note-body" placeholder="Start writing your thoughts here..." aria-label="Note content">'+escapeHTML(n.body)+'</textarea><div class="footer"><span id="word-count">'+wordCount(n.body)+' words</span><span>Created '+new Date(n.createdAt).toLocaleDateString()+'</span></div>';
-el("note-title").addEventListener("input",function(){update("title",this.value)});
-el("note-body").addEventListener("input",function(){update("body",this.value);el("word-count").textContent=wordCount(this.value)+" words"});
-el("note-tags").addEventListener("change",function(){update("tags",this.value.split(",").map(function(x){return x.trim()}).filter(Boolean).slice(0,20))});
-el("note-category").addEventListener("change",function(){update("category",this.value.trim()||"Personal")})
-}
-function wordCount(s){return s.trim()?s.trim().split(/\s+/).length:0}
-function update(field,value){var n=current();if(!n)return;n[field]=value;n.updatedAt=Date.now();el("save-state").textContent="● Saving…";clearTimeout(saveTimer);saveTimer=setTimeout(persist,250);if(field==="title"||field==="body")renderList()}
-function selectNote(id){clearTimeout(saveTimer);if(current())persist();selected=id;renderList();editor()}
-function create(){clearTimeout(saveTimer);if(current())persist();var now=Date.now(),n={id:crypto.randomUUID?crypto.randomUUID():"note-"+now+"-"+Math.random(),title:"",body:"",category:category||"Personal",tags:[],pinned:false,createdAt:now,updatedAt:now};notes.unshift(n);selected=n.id;view="all";category=null;updateView();persist();editor();setTimeout(function(){el("note-title").focus()},0)}
-function remove(){var n=current();if(!n)return;if(!confirm('Delete "'+(n.title.trim()||"Untitled note")+'"? This cannot be undone.'))return;notes=notes.filter(function(x){return x.id!==n.id});selected=null;persist();editor();toast("Note deleted")}
-function download(content,name){var a=document.createElement("a"),url=URL.createObjectURL(new Blob([content],{type:"text/markdown;charset=utf-8"}));a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000)}
-function slug(s){return (s||"note").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,50)||"note"}
-function exportOne(){var n=current();if(!n)return;download("# "+(n.title||"Untitled note")+"\n\nCategory: "+n.category+"\nTags: "+(n.tags||[]).join(", ")+"\n\n"+n.body+"\n",slug(n.title)+".md");toast("Note exported")}
-function exportAll(){if(!notes.length){toast("There are no notes to export");return}var text=notes.map(function(n){return "# "+(n.title||"Untitled note")+"\n\n_Category: "+n.category+" · Tags: "+(n.tags||[]).join(", ")+"_\n\n"+n.body}).join("\n\n---\n\n");download("# NoteNest export\n\n"+text,"notenest-export.md");toast("All notes exported")}
-function theme(){var dark=document.documentElement.dataset.theme!=="dark";document.documentElement.dataset.theme=dark?"dark":"light";localStorage.setItem(THEME,dark?"dark":"light")}
-document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener("click",function(){view=b.dataset.view;category=null;updateView();renderList();renderCategories()})});
-el("new-note").addEventListener("click",create);el("first-note").addEventListener("click",create);el("search").addEventListener("input",renderList);el("pin").addEventListener("click",function(){var n=current();if(n){n.pinned=!n.pinned;n.updatedAt=Date.now();persist();editor();toast(n.pinned?"Note pinned":"Note unpinned")}});
-el("delete").addEventListener("click",remove);el("export").addEventListener("click",exportOne);el("export-all").addEventListener("click",exportAll);el("theme").addEventListener("click",theme);el("theme-empty").addEventListener("click",theme);
-document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="n"){e.preventDefault();create()}if(e.key==="Escape"&&document.activeElement===el("search")){el("search").value="";renderList();el("search").blur()}});
-if(localStorage.getItem(THEME)==="dark")document.documentElement.dataset.theme="dark";
-window.addEventListener("beforeunload",function(){clearTimeout(saveTimer);if(current())localStorage.setItem(KEY,JSON.stringify(notes))});
-counts();updateView();renderCategories();renderList();editor();
-})();
-</script>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" data-action="home" aria-label="NoteNest home">
+        <span class="brand-mark">n</span>
+        <span class="brand-copy"><strong>NoteNest</strong><small>WORKSPACE</small></span>
+      </a>
+      <div class="workspace-switcher">
+        <div class="workspace-avatar">N</div>
+        <div class="workspace-name"><strong>My workspace</strong><small>Personal space</small></div>
+        <span class="chevron">⌄</span>
+      </div>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span> Home</button>
+        <button class="nav-item" data-view="all"><span class="nav-icon">▤</span> All pages <span class="nav-count" id="page-count">0</span></button>
+        <button class="nav-item" data-view="favorites"><span class="nav-icon">☆</span> Favorites</button>
+        <button class="nav-item" data-action="open-search"><span class="nav-icon">⌕</span> Search <kbd>⌘ K</kbd></button>
+      </nav>
+      <div class="sidebar-section">
+        <div class="section-head"><span>YOUR PAGES</span><button class="icon-button tiny" data-action="new-page" title="Create a page" aria-label="Create a page">＋</button></div>
+        <div class="page-tree" id="page-tree"></div>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-view="trash"><span class="nav-icon">▱</span> Trash</button>
+        <button class="nav-item" data-action="open-settings"><span class="nav-icon">⚙</span> Settings & backup</button>
+        <div class="sidebar-branding"><span class="online-dot"></span> Saved on this device<br><a href="https://infioffice.com" target="_blank" rel="noopener noreferrer">Made by InfiOffice ↗</a></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs" id="breadcrumbs"><span>My workspace</span><span class="crumb-sep">/</span><strong>Home</strong></div>
+        <div class="topbar-actions">
+          <button class="top-search" data-action="open-search"><span>⌕</span><span>Search anything...</span><kbd>Ctrl K</kbd></button>
+          <button class="icon-button" data-action="toggle-theme" title="Toggle theme" aria-label="Toggle theme">◐</button>
+          <button class="avatar-button" data-action="open-settings" title="Workspace settings" aria-label="Workspace settings">N</button>
+        </div>
+      </header>
+      <section class="view" id="view" tabindex="-1"></section>
+    </main>
+  </div>
+
+  <input type="file" id="import-file" accept=".json,.md,.markdown,.txt" hidden>
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head"><div><p class="eyebrow" id="modal-kicker">WORKSPACE</p><h2 id="modal-title">Search</h2></div><button class="icon-button" data-action="close-modal" aria-label="Close">×</button></div>
+      <div id="modal-content"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
 </body>
 </html>

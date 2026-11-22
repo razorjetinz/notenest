@@ -1,0 +1,11 @@
+{
+  "name": "NoteNest Workspace",
+  "short_name": "NoteNest",
+  "description": "A local-first workspace for notes, docs, tasks and ideas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#6558d3",
+  "orientation": "any"
+}
